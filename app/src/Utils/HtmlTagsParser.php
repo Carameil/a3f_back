@@ -10,6 +10,8 @@ class HtmlTagsParser implements UrlParserInterface
         $pattern = '/<(?!\/)([^\s!][^\s>]+)/';
         preg_match_all($pattern, $html, $matches);
 
-        return $matches[0];
+        return array_map(static function ($tag) {
+            return substr($tag, 1);
+        }, $matches[0]);
     }
 }
