@@ -7,11 +7,11 @@ class UrlValidator
     public static function validate($url)
     {
         if (empty($url)) {
-            return "URL is required";
+            throw new \DomainException('URL is required');
         }
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return "Invalid URL";
+            throw new \DomainException('Invalid URL');
         }
         return true;
     }

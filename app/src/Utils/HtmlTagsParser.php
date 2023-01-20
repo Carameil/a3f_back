@@ -2,16 +2,16 @@
 
 namespace App\Utils;
 
-class HtmlTagsParser implements UrlParserInterface
+class HtmlTagsParser implements StringParserInterface
 {
-    public function parse($url): array
+    public function parse(string $string): array
     {
-        $html = file_get_contents($url);
-        $pattern = '/<(?!\/)([^\s!][^\s>]+)/';
-        preg_match_all($pattern, $html, $matches);
+        preg_match_all('/<([a-zA-Z0-9]+)(?:\s|\/>|>)/', $string, $matches);
+        $tags = preg_replace("/<|\/>|>|\s/", "", $matches[0]);
+        if (!is_array($tags)) {
+            throw new \DomainException('Can\'t parse this page');
+        }
 
-        return array_map(static function ($tag) {
-            return substr($tag, 1);
-        }, $matches[0]);
+        return $tags;
     }
 }

@@ -11,9 +11,6 @@
 <form action="/" id="form1" method="post">
     <label for="fname">Url</label>
     <input type="text" id="url" name="url"><br><br>
-    <?php if (isset($error)): ?>
-        <div class="error"><?php echo $error; ?></div>
-    <?php endif; ?>
     <input type="submit" value="Submit">
 </form>
 </body>

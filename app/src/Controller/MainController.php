@@ -2,38 +2,34 @@
 
 namespace App\Controller;
 
+use App\DataProvider\DataProviderInterface;
 use App\Service\MainService;
-use App\Utils\UrlParserInterface;
-use App\Validator\UrlValidator;
+use App\Utils\StringParserInterface;
 
 readonly class MainController
 {
     public function __construct(
-            private UrlParserInterface $parser,
+            private StringParserInterface $parser,
             private MainService $mainService
-    )
-    {
+    ) {
     }
 
     public function index(): void
     {
-        include $_SERVER['DOCUMENT_ROOT']. '/views/main.php';
+        include $_SERVER['DOCUMENT_ROOT'].'/views/main.php';
     }
 
     /**
      * @throws \JsonException
      */
-    public function actionParse(string $url): void
+    public function actionParse(DataProviderInterface $dataProvider): void
     {
-        $validUrl = UrlValidator::validate($url);
+        $dataProvider->loadData();
+        $rawData = $dataProvider->getStringData();
 
-        if($validUrl !== true) {
-            $error = $validUrl;
-            include($_SERVER['DOCUMENT_ROOT']. '/views/main.php');
-            die();
-        }
-        $tags = $this->parser->parse($url);
-        $result = $this->mainService->countQuantityOfUniqueTags($tags);
-        echo json_encode($result, JSON_THROW_ON_ERROR);
+        $tags = $this->parser->parse($rawData);
+
+        $quantity = $this->mainService->countQuantityOfUniqueTags($tags);
+        echo json_encode($quantity, JSON_THROW_ON_ERROR);
     }
 }

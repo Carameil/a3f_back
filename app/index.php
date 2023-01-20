@@ -1,14 +1,16 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
+
+require_once __DIR__.'/vendor/autoload.php';
 
 use App\Controller\MainController;
+use App\DataProvider\DataHtmlProvider;
 use App\Service\MainService;
 use App\Utils\HtmlTagsParser;
+use App\Validator\UrlValidator;
 
 $request = $_SERVER['REQUEST_URI'];
 
 switch ($request) {
-
     case '/':
         $controller = new MainController(
                 new HtmlTagsParser(),
@@ -16,7 +18,13 @@ switch ($request) {
         );
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller->actionParse($_POST['url']);
+            try {
+                $url = $_POST['url'];
+                UrlValidator::validate($url);
+                $controller->actionParse(new DataHtmlProvider($url));
+            } catch (\Exception $exception) {
+                echo $exception->getMessage();
+            }
         }
 
         $controller->index();
